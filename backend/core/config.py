@@ -5,6 +5,7 @@ Centralized settings using Pydantic for validation and environment variable supp
 
 from pydantic_settings import BaseSettings
 from typing import Set, Optional
+from pathlib import Path
 import os
 
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     # =============================================================================
     PROJECT_NAME: str = "TrOCR OCR API"
     VERSION: str = "1.0.0"
+    BASE_DIR : Path = Path(__file__).parent.parent.parent
     
     # =============================================================================
     # OCR MODEL CONFIGURATION

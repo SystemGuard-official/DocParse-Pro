@@ -3,7 +3,7 @@ Homepage configuration and data structures for the OCR API.
 Centralizes all homepage-related configuration to keep the main app.py clean.
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from backend.core.config import settings
 
 
@@ -11,7 +11,7 @@ class HomepageConfig:
     """Configuration class for homepage content based on deployed OCR service."""
     
     @staticmethod
-    def get_service_config(mode: str = None) -> Dict[str, Any]:
+    def get_service_config(mode: Optional[str] = None) -> Dict[str, Any]:
         """Get service configuration based on mode or DEPLOYED_OCR setting."""
         
         # Use provided mode or fall back to settings
