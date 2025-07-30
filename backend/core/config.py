@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     # =============================================================================
     
     # Main OCR Engine Selection
-    DEPLOYED_OCR: str = "None"  # Options: "Qwen" or "TrOCR"
+    DEPLOYED_OCR: str = "TrOCR"  # Options: "Qwen" or "TrOCR"
     
     # Qwen Vision Model Settings
     QWEN_VL_MODEL: str = "Qwen/Qwen2.5-VL-3B-Instruct"
