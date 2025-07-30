@@ -27,8 +27,8 @@ class GPUResourceManager:
         self._lock = asyncio.Lock()
         self._current_users: set = set()
         self._max_concurrent = max_concurrent_users
-        self._memory_threshold = 12.0  # GB - leave 2.75GB buffer for safety
-    
+        self._memory_threshold = 12.0
+        
     async def acquire_gpu(self, service_name: str, worker_id: int = None) -> bool:
         """
         Acquire GPU access for a service worker
@@ -73,12 +73,17 @@ class GPUResourceManager:
     
     def get_stats(self) -> dict:
         """Get GPU manager statistics"""
+        # Check CUDA availability and get memory info
+        cuda_available = torch.cuda.is_available()
+        memory_info = log_gpu_memory("GPU stats check") if cuda_available else None
+        
         return {
-            "current_users": list(self._current_users),
-            "active_count": len(self._current_users),
-            "max_concurrent": self._max_concurrent,
-            "memory_threshold_gb": self._memory_threshold,
-            "is_available": len(self._current_users) < self._max_concurrent
+            "users": list(self._current_users),
+            "active_users": len(self._current_users),
+            "max_users": self._max_concurrent,
+            "gpu_available": len(self._current_users) < self._max_concurrent,
+            "cuda_enabled": cuda_available,
+            "gpu_memory": memory_info
         }
     
     async def wait_for_gpu(self, service_name: str, worker_id: int = None, timeout: float = 300.0) -> bool:
@@ -100,7 +105,4 @@ class GPUResourceManager:
             # Wait a bit before trying again
             await asyncio.sleep(2)  # Increased wait time for multiple workers
 
-
-# Global GPU resource manager instance
-# Set to 1 concurrent user for single worker mode
 gpu_manager = GPUResourceManager(max_concurrent_users=1)

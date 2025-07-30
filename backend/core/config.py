@@ -5,7 +5,6 @@ Centralized settings using Pydantic for validation and environment variable supp
 
 from pydantic_settings import BaseSettings
 from typing import Set, Optional
-from pathlib import Path
 import os
 
 
@@ -15,19 +14,23 @@ class Settings(BaseSettings):
     # =============================================================================
     # APPLICATION SETTINGS
     # =============================================================================
-    PROJECT_NAME: str = "TrOCR OCR API"
+    PROJECT_NAME: str = "OCR API"
     VERSION: str = "1.0.0"
-    BASE_DIR : Path = Path(__file__).parent.parent.parent
     
     # =============================================================================
     # OCR MODEL CONFIGURATION
     # =============================================================================
     
     # Main OCR Engine Selection
-    DEPLOYED_OCR: str = "TrOCR"  # Options: "Qwen" or "TrOCR"
+    DEPLOYED_OCR: str = "None"  # Options: "Qwen" or "TrOCR"
     
     # Qwen Vision Model Settings
     QWEN_VL_MODEL: str = "Qwen/Qwen2.5-VL-3B-Instruct"
+    DEVICE_MAP: str = "auto"
+    TRUST_REMOTE_CODE: bool = True  
+    LOW_CPU_MEM_USAGE: bool = True
+    LOAD_IN_8BIT: bool = False
+        
     DEFAULT_LLM_PROMPT: str = """FORM IMAGE TO JSON - Extract ALL information from this form image and return ONLY a valid JSON object.
             - Do NOT return any commentary, description, example, or explanation—ONLY the JSON object.
             - The output MUST be a single, complete JSON object, only the assistance response no user prompt.

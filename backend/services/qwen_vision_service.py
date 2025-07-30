@@ -7,8 +7,6 @@ import numpy as np
 from backend.schemas import FormParsingResult
 from backend.utils.logging.setup import logger
 from backend.utils.response_parser import extract_and_parse_json
-import re
-import json
 import gc
 from backend.core.config import settings
 
@@ -30,15 +28,14 @@ else:
 
     tokenizer = AutoTokenizer.from_pretrained(settings.QWEN_VL_MODEL, trust_remote_code=True)
     processor = AutoProcessor.from_pretrained(settings.QWEN_VL_MODEL, trust_remote_code=True)
-
     # Load model with memory optimization (GPU only)
     model = AutoModelForVision2Seq.from_pretrained(
         settings.QWEN_VL_MODEL,
-        device_map="auto",  # Use auto device mapping for better memory management
-        trust_remote_code=True,
+        device_map=settings.DEVICE_MAP,
+        trust_remote_code=settings.TRUST_REMOTE_CODE,
         torch_dtype=torch.float16,  # Always use float16 for GPU to save memory
-        low_cpu_mem_usage=True,  # Reduce CPU memory usage during loading
-        load_in_8bit=False,  # Set to True if you have bitsandbytes installed for even more memory savings
+        low_cpu_mem_usage=settings.LOW_CPU_MEM_USAGE,  # Reduce CPU memory usage during loading
+        load_in_8bit=settings.LOAD_IN_8BIT,  # Set to True if you have bitsandbytes installed for even more memory savings
     )
 
     model.eval()
@@ -94,6 +91,8 @@ class QwenFormParser:
         start_infer = time.time()
         
         try:
+            if processor is None:
+                raise RuntimeError("Processor is not initialized. Ensure CUDA is available and the model is loaded.")
             inputs = processor(
                 text=[prompt],
                 images=[image],
@@ -106,16 +105,18 @@ class QwenFormParser:
                     inputs[k] = inputs[k].to(device)
             logger.info(f"Inputs moved to device: {device}")
             
+            if model is None:
+                raise RuntimeError("Model is not initialized. Ensure CUDA is available and the model is loaded.")
             with torch.no_grad():
                 output = model.generate(
                     **inputs,
-                    max_new_tokens=1024,  # Reduced from 2048 to save memory
+                    max_new_tokens=1024,
                     do_sample=True,
                     temperature=0.1,
                     top_p=0.9,
                     repetition_penalty=1.05,
-                    eos_token_id=tokenizer.eos_token_id,
-                    pad_token_id=tokenizer.pad_token_id
+                    eos_token_id=tokenizer.eos_token_id if tokenizer is not None else None,
+                    pad_token_id=tokenizer.pad_token_id if tokenizer is not None else None
                 )
             
             infer_time = time.time() - start_infer
@@ -135,6 +136,7 @@ class QwenFormParser:
             
         except torch.cuda.OutOfMemoryError as e:
             logger.error(f"CUDA out of memory: {e}")
+            
             # Clear cache and try to recover
             torch.cuda.empty_cache()
             gc.collect()
@@ -146,7 +148,7 @@ class QwenFormParser:
             gc.collect()
             raise
 
-    def parse_form_complete(self, filename: str, image_bytes: bytes, llm_prompt: str) -> str:
+    def parse_form_complete(self, filename: str, image_bytes: bytes, llm_prompt: str) -> FormParsingResult:
         start_time = time.time()
         image = Image.open(io.BytesIO(image_bytes))
         image_array = np.array(image)
