@@ -121,7 +121,7 @@ class QwenFormParser:
             
             infer_time = time.time() - start_infer
             logger.info(f"Inference time: {infer_time:.2f} seconds")
-            result = tokenizer.decode(output[0], skip_special_tokens=True).strip()
+            result = tokenizer.decode(output[0], skip_special_tokens=True).strip() # type: ignore
             
             # Clean up tensors immediately
             del inputs, output
@@ -130,7 +130,7 @@ class QwenFormParser:
             
             json_result = extract_and_parse_json(result)
             if json_result is not None:
-                return json_result
+                return json_result # type: ignore
             logger.warning("Failed to extract valid JSON, returning raw output.")
             return result
             

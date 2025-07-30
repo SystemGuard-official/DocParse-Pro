@@ -55,7 +55,7 @@ async def get_gpu_status():
             cuda_available=False,
             cuda_device_count=0,
             memory_info=None,
-            gpu_status={},
+            gpu_status={}, # type: ignore
             message="Failed to get GPU status",
             error_detail=str(e)
         )
