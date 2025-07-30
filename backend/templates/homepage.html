@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR API - {service_name}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {{
+            theme: {{
+                extend: {{
+                    fontFamily: {{
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+                        'mono': ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular'],
+                    }},
+                    colors: {{
+                        primary: {{
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#172554'
+                        }},
+                        secondary: {{
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87'
+                        }},
+                        accent: {{
+                            50: '#fefce8',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f'
+                        }},
+                        success: {{
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857'
+                        }},
+                        danger: {{
+                            50: '#fef2f2',
+                            500: '#ef4444',
+                            600: '#dc2626'
+                        }}
+                    }},
+                    animation: {{
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'slide-down': 'slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'fade-in': 'fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'bounce-subtle': 'bounceSubtle 3s infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                        'gradient-x': 'gradientX 3s ease infinite',
+                        'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'wiggle': 'wiggle 1s ease-in-out infinite'
+                    }},
+                    keyframes: {{
+                        float: {{
+                            '0%, 100%': {{ transform: 'translateY(0px) rotate(0deg)' }},
+                            '50%': {{ transform: 'translateY(-20px) rotate(1deg)' }}
+                        }},
+                        glow: {{
+                            '0%': {{ boxShadow: '0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.2)' }},
+                            '100%': {{ boxShadow: '0 0 40px rgba(59, 130, 246, 0.8), 0 0 80px rgba(59, 130, 246, 0.4)' }}
+                        }},
+                        pulseGlow: {{
+                            '0%, 100%': {{ boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)' }},
+                            '70%': {{ boxShadow: '0 0 0 10px rgba(59, 130, 246, 0)' }}
+                        }},
+                        slideUp: {{
+                            '0%': {{ transform: 'translateY(40px)', opacity: '0' }},
+                            '100%': {{ transform: 'translateY(0)', opacity: '1' }}
+                        }},
+                        slideDown: {{
+                            '0%': {{ transform: 'translateY(-40px)', opacity: '0' }},
+                            '100%': {{ transform: 'translateY(0)', opacity: '1' }}
+                        }},
+                        fadeIn: {{
+                            '0%': {{ opacity: '0' }},
+                            '100%': {{ opacity: '1' }}
+                        }},
+                        fadeInUp: {{
+                            '0%': {{ opacity: '0', transform: 'translateY(30px)' }},
+                            '100%': {{ opacity: '1', transform: 'translateY(0)' }}
+                        }},
+                        bounceSubtle: {{
+                            '0%, 100%': {{ transform: 'translateY(0)' }},
+                            '50%': {{ transform: 'translateY(-8px)' }}
+                        }},
+                        shimmer: {{
+                            '0%': {{ backgroundPosition: '-200% 0' }},
+                            '100%': {{ backgroundPosition: '200% 0' }}
+                        }},
+                        gradientX: {{
+                            '0%, 100%': {{ backgroundPosition: '0% 50%' }},
+                            '50%': {{ backgroundPosition: '100% 50%' }}
+                        }},
+                        scaleIn: {{
+                            '0%': {{ transform: 'scale(0.9)', opacity: '0' }},
+                            '100%': {{ transform: 'scale(1)', opacity: '1' }}
+                        }},
+                        wiggle: {{
+                            '0%, 100%': {{ transform: 'rotate(-3deg)' }},
+                            '50%': {{ transform: 'rotate(3deg)' }}
+                        }}
+                    }},
+                    backgroundImage: {{
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+                        'shimmer': 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)'
+                    }},
+                    spacing: {{
+                        '18': '4.5rem',
+                        '88': '22rem',
+                        '128': '32rem'
+                    }},
+                    screens: {{
+                        'xs': '475px',
+                        '3xl': '1600px'
+                    }}
+                }}
+            }}
+        }}
+    </script>
+    <style>
+        .glass-effect {{
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }}
+        
+        .glass-card {{
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        }}
+        
+        .gradient-border {{
+            background: linear-gradient(white, white) padding-box,
+                       linear-gradient(135deg, #667eea, #764ba2) border-box;
+            border: 2px solid transparent;
+        }}
+        
+        .service-gradient-purple {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }}
+        .service-gradient-blue {{
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }}
+        .service-gradient-teal {{
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }}
+        
+        .bg-mesh {{
+            background: 
+                linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, transparent 50%),
+                linear-gradient(225deg, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+                linear-gradient(315deg, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                linear-gradient(45deg, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(at 40% 20%, hsla(220, 100%, 85%, 0.3) 0px, transparent 40%),
+                radial-gradient(at 80% 0%, hsla(189, 100%, 80%, 0.2) 0px, transparent 45%),
+                radial-gradient(at 0% 50%, hsla(300, 100%, 90%, 0.2) 0px, transparent 40%),
+                radial-gradient(at 80% 50%, hsla(340, 100%, 85%, 0.25) 0px, transparent 45%),
+                radial-gradient(at 0% 100%, hsla(60, 100%, 85%, 0.2) 0px, transparent 40%),
+                radial-gradient(at 80% 100%, hsla(260, 100%, 80%, 0.3) 0px, transparent 45%),
+                radial-gradient(at 40% 80%, hsla(180, 100%, 85%, 0.2) 0px, transparent 40%),
+                linear-gradient(180deg, 
+                    rgba(255, 255, 255, 0.95) 0%, 
+                    rgba(249, 250, 251, 0.9) 25%,
+                    rgba(243, 244, 246, 0.85) 50%,
+                    rgba(249, 250, 251, 0.9) 75%,
+                    rgba(255, 255, 255, 0.95) 100%
+                );
+            background-size: 400% 400%, 400% 400%, 400% 400%, 400% 400%, 800px 800px, 600px 600px, 700px 700px, 650px 650px, 750px 750px, 600px 600px, 550px 550px, 100% 100%;
+            animation: gradientShift 20s ease infinite;
+        }}
+        
+        @keyframes gradientShift {{
+            0%, 100% {{
+                background-position: 0% 50%, 100% 50%, 50% 0%, 50% 100%, 40% 20%, 80% 0%, 0% 50%, 80% 50%, 0% 100%, 80% 100%, 40% 80%, 0% 0%;
+            }}
+            25% {{
+                background-position: 100% 50%, 0% 50%, 50% 100%, 50% 0%, 60% 30%, 60% 20%, 20% 70%, 60% 30%, 20% 80%, 60% 80%, 60% 60%, 0% 0%;
+            }}
+            50% {{
+                background-position: 50% 0%, 50% 100%, 0% 50%, 100% 50%, 80% 40%, 40% 40%, 40% 90%, 40% 10%, 40% 60%, 40% 60%, 80% 40%, 0% 0%;
+            }}
+            75% {{
+                background-position: 50% 100%, 50% 0%, 100% 50%, 0% 50%, 20% 50%, 20% 60%, 60% 30%, 20% 70%, 60% 40%, 20% 40%, 20% 20%, 0% 0%;
+            }}
+        }}
+        
+        .code-block {{
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }}
+        
+        .shimmer-effect {{
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }}
+        
+        @media (max-width: 640px) {{
+            .glass-effect {{
+                backdrop-filter: blur(12px);
+            }}
+        }}
+        
+        .scroll-smooth {{
+            scroll-behavior: smooth;
+        }}
+        
+        /* Enhanced feature card animations */
+        .feature-card {{
+            position: relative;
+            overflow: hidden;
+        }}
+        
+        .feature-card::before {{
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }}
+        
+        .feature-card:hover::before {{
+            animation: shimmer 1.5s ease-in-out;
+            opacity: 1;
+        }}
+        
+        @keyframes shimmer {{
+            0% {{ transform: translateX(-100%) translateY(-100%) rotate(45deg); }}
+            100% {{ transform: translateX(100%) translateY(100%) rotate(45deg); }}
+        }}
+        
+        /* Background texture overlay */
+        .bg-texture {{
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.05) 50%, transparent 60%);
+            background-size: 200px 200px, 300px 300px, 100px 100px;
+            animation: textureFloat 30s ease-in-out infinite;
+        }}
+        
+        @keyframes textureFloat {{
+            0%, 100% {{ background-position: 0% 0%, 100% 100%, 0% 100%; }}
+            50% {{ background-position: 100% 100%, 0% 0%, 100% 0%; }}
+        }}
+        
+        /* Subtle grid overlay */
+        .bg-grid {{
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }}
+    </style>
+</head>
+<body class="bg-mesh bg-texture bg-grid min-h-screen font-sans scroll-smooth overflow-x-hidden relative">
+    <!-- Enhanced Decorative Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <!-- Primary floating orbs with enhanced gradients -->
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-blue-400/20 via-purple-400/15 to-pink-400/20 rounded-full blur-3xl animate-float opacity-80"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-cyan-400/20 rounded-full blur-3xl animate-float opacity-80" style="animation-delay: -3s;"></div>
+        
+        <!-- Secondary floating elements -->
+        <div class="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-violet-400/15 via-indigo-400/10 to-blue-400/15 rounded-full blur-2xl animate-float opacity-60" style="animation-delay: -6s;"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-orange-400/15 via-amber-400/10 to-yellow-400/15 rounded-full blur-2xl animate-float opacity-60" style="animation-delay: -9s;"></div>
+        
+        <!-- Center pulsing element -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-128 h-128 bg-gradient-to-br from-indigo-400/8 via-purple-400/5 to-pink-400/8 rounded-full blur-3xl animate-pulse opacity-50"></div>
+        
+        <!-- Additional subtle accents -->
+        <div class="absolute top-1/3 left-1/5 w-32 h-32 bg-gradient-to-br from-rose-400/12 to-pink-400/8 rounded-full blur-xl animate-bounce-subtle opacity-40" style="animation-delay: -12s;"></div>
+        <div class="absolute bottom-1/3 right-1/5 w-32 h-32 bg-gradient-to-br from-teal-400/12 to-emerald-400/8 rounded-full blur-xl animate-bounce-subtle opacity-40" style="animation-delay: -15s;"></div>
+    </div>
+
+    <!-- Header with Enhanced Glass Effect -->
+    <header class="glass-effect sticky top-0 z-50 border-b border-white/20 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center py-4 gap-4">
+                <div class="flex items-center space-x-4 animate-fade-in">
+                    <div class="service-gradient-{primary_color} text-white p-3 rounded-2xl shadow-2xl animate-bounce-subtle relative">
+                        <i class="{service_icon} text-2xl"></i>
+                        <div class="absolute inset-0 bg-white/20 rounded-2xl animate-pulse-glow"></div>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{service_name}</h1>
+                        <p class="text-gray-600 text-sm font-medium">API v{version} • {service_mode} Mode</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <!-- Enhanced Mode Toggle Switch -->
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm font-semibold text-gray-700 hidden sm:inline">Mode:</span>
+                        <div class="relative group">
+                            <select id="modeToggle" onchange="switchMode()" 
+                                    class="appearance-none bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl px-6 py-3 pr-10 text-sm font-semibold text-gray-700 hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300/50 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
+                                <option value="Qwen" {{'selected' if current_mode == 'Qwen' else ''}}>🧠 Qwen Vision</option>
+                                <option value="TrOCR" {{'selected' if current_mode == 'TrOCR' else ''}}>📝 TrOCR</option>
+                                <option value="Hybrid" {{'selected' if current_mode == 'Hybrid' else ''}}>🔄 Both</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-500 text-sm group-hover:text-blue-500 transition-colors duration-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Status Indicator -->
+                    <div class="flex items-center space-x-3 bg-success-50/80 backdrop-blur-sm px-4 py-2 rounded-full border border-success-200/50">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-success-500"></span>
+                        </span>
+                        <span class="text-sm font-semibold text-success-700">Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <!-- Enhanced Hero Section -->
+        <div class="text-center mb-20 animate-fade-in-up">
+            <div class="mb-12">
+                <div class="inline-block mb-6">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-100/80 to-purple-100/80 text-blue-800 border border-blue-200/50 backdrop-blur-sm">
+                        <i class="fas fa-sparkles mr-2 text-blue-600"></i>
+                        Advanced OCR Technology
+                    </span>
+                </div>
+                
+                <h2 class="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-6 leading-tight">
+                    <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent animate-gradient-x bg-300% bg-size-200">
+                        {service_description}
+                    </span>
+                </h2>
+                
+                <p class="text-xl sm:text-2xl text-gray-600 mb-4 font-medium max-w-3xl mx-auto leading-relaxed">{service_tagline}</p>
+                <p class="text-lg text-gray-500 max-w-2xl mx-auto">High-performance API for optical character recognition and document processing with enterprise-grade reliability</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mb-12">
+                <a href="/docs" class="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-2xl transition-all duration-300 shadow-2xl hover:shadow-blue-500/25 transform hover:-translate-y-1 hover:scale-105 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <i class="fas fa-book mr-3 group-hover:rotate-12 transition-transform duration-300"></i>
+                    API Documentation
+                </a>
+                <a href="/redoc" class="group inline-flex items-center justify-center px-8 py-4 bg-white/80 backdrop-blur-sm text-gray-700 font-bold rounded-2xl hover:bg-white/90 transition-all duration-300 shadow-2xl hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 border border-white/50 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-100/0 via-gray-100/50 to-gray-100/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <i class="fas fa-file-alt mr-3 group-hover:scale-110 transition-transform duration-300"></i>
+                    ReDoc
+                </a>
+            </div>
+        </div>
+
+        <!-- Enhanced Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20 animate-slide-up">
+            {features_html}
+        </div>
+
+        <!-- Enhanced API Endpoints Section -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-20 animate-slide-up">
+            <!-- System Endpoints -->
+            <div class="glass-card rounded-3xl p-8 hover:bg-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl group">
+                <div class="mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-gradient-to-br from-slate-500 to-slate-700 text-white p-4 rounded-2xl mr-6 shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
+                            <i class="fas fa-cogs text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">System Endpoints</h3>
+                            <p class="text-gray-600 text-sm">Core system operations</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4 mb-8">
+                    {base_endpoints_html}
+                </div>
+                
+                <div class="p-5 bg-gradient-to-r from-slate-50/80 to-gray-50/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 group-hover:from-slate-100/80 group-hover:to-gray-100/80 transition-all duration-300">
+                    <p class="text-sm text-slate-700 flex items-center font-medium">
+                        <i class="fas fa-info-circle mr-3 text-slate-500 text-base"></i>
+                        Essential endpoints for health monitoring and system status tracking
+                    </p>
+                </div>
+            </div>
+
+            <!-- Service Endpoints -->
+            <div class="glass-card rounded-3xl p-8 hover:bg-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl group">
+                <div class="mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white p-4 rounded-2xl mr-6 shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
+                            <i class="{service_icon} text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">{service_mode} Service</h3>
+                            <p class="text-gray-600 text-sm">Processing endpoints</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4 mb-8">
+                    {service_endpoints_html}
+                </div>
+                
+                <div class="p-5 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl border border-blue-200/50 group-hover:from-blue-100/80 group-hover:to-indigo-100/80 transition-all duration-300">
+                    <p class="text-sm text-blue-700 flex items-center font-medium">
+                        <i class="fas fa-rocket mr-3 text-blue-500 text-base"></i>
+                        Core processing endpoints for {service_mode} operations and AI-powered text extraction
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Quick Start -->
+        <div class="glass-card rounded-3xl p-8 sm:p-10 text-gray-900 mb-16 animate-slide-up group">
+            <div class="flex items-center mb-10">
+                <div class="bg-gradient-to-br from-amber-500 to-amber-700 text-white p-4 rounded-2xl mr-6 shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
+                    <i class="fas fa-rocket text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold mb-2">Quick Start Guide</h3>
+                    <p class="text-gray-600">Get up and running in minutes</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <div class="group/code">
+                    <div class="flex items-center justify-between mb-6">
+                        <h4 class="text-xl font-bold flex items-center text-gray-800">
+                            <i class="fas fa-terminal mr-3 text-amber-500"></i>
+                            Using cURL
+                        </h4>
+                        <button class="copy-btn px-4 py-2 text-sm bg-gray-100/80 hover:bg-gray-200/80 rounded-lg transition-colors duration-200 font-medium" onclick="copyToClipboard('curl-code')">
+                            <i class="fas fa-copy mr-2"></i>Copy
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <pre id="curl-code" class="code-block text-green-400 p-6 rounded-2xl text-sm overflow-x-auto border border-gray-700/50 group-hover/code:shadow-2xl transition-all duration-300 font-mono leading-relaxed"><code>{curl_example}</code></pre>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 -translate-x-full group-hover/code:translate-x-full transition-transform duration-1000 pointer-events-none"></div>
+                    </div>
+                </div>
+                
+                <div class="group/code">
+                    <div class="flex items-center justify-between mb-6">
+                        <h4 class="text-xl font-bold flex items-center text-gray-800">
+                            <i class="fab fa-python mr-3 text-amber-500"></i>
+                            Using Python
+                        </h4>
+                        <button class="copy-btn px-4 py-2 text-sm bg-gray-100/80 hover:bg-gray-200/80 rounded-lg transition-colors duration-200 font-medium" onclick="copyToClipboard('python-code')">
+                            <i class="fas fa-copy mr-2"></i>Copy
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <pre id="python-code" class="code-block text-blue-400 p-6 rounded-2xl text-sm overflow-x-auto border border-gray-700/50 group-hover/code:shadow-2xl transition-all duration-300 font-mono leading-relaxed"><code>{python_example}</code></pre>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 -translate-x-full group-hover/code:translate-x-full transition-transform duration-1000 pointer-events-none"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-10 p-6 bg-gradient-to-r from-amber-50/80 to-orange-50/80 rounded-2xl border border-amber-200/50 backdrop-blur-sm">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0">
+                    <div class="flex items-center">
+                        <i class="fas fa-lightbulb text-amber-500 mr-4 text-2xl animate-wiggle"></i>
+                        <div>
+                            <p class="text-amber-800 font-semibold text-lg">Pro Tip</p>
+                            <p class="text-amber-700">Visit <a href="/docs" class="text-amber-600 hover:text-amber-700 underline font-bold ml-1 transition-colors duration-200">/docs</a> for interactive API testing and comprehensive parameter documentation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Monitoring Section -->
+        <div class="mb-16 animate-slide-up">
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold text-gray-900 mb-2">Real-time System Monitor</h3>
+                <p class="text-gray-600">Live GPU and queue status updates</p>
+                
+                <!-- Refresh Rate Controls -->
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
+                    <div class="flex items-center space-x-3">
+                        <label for="gpu-refresh-rate" class="text-sm font-medium text-gray-700">GPU Refresh:</label>
+                        <select id="gpu-refresh-rate" onchange="updateGpuRefreshRate()" 
+                                class="appearance-none bg-white/80 backdrop-blur-sm border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300/50 transition-all duration-300 shadow-sm hover:shadow-md">
+                            <option value="1000">1 second</option>
+                            <option value="2000">2 seconds</option>
+                            <option value="3000">3 seconds</option>
+                            <option value="4000">4 seconds</option>
+                            <option value="5000" selected>5 seconds</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <label for="queue-refresh-rate" class="text-sm font-medium text-gray-700">Queue Refresh:</label>
+                        <select id="queue-refresh-rate" onchange="updateQueueRefreshRate()" 
+                                class="appearance-none bg-white/80 backdrop-blur-sm border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300/50 transition-all duration-300 shadow-sm hover:shadow-md">
+                            <option value="1000">1 second</option>
+                            <option value="2000" selected>2 seconds</option>
+                            <option value="3000">3 seconds</option>
+                            <option value="4000">4 seconds</option>
+                            <option value="5000">5 seconds</option>
+                        </select>
+                    </div>
+                    
+                    <button onclick="pauseResumeMonitoring()" id="pause-resume-btn"
+                            class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                        <i class="fas fa-pause mr-2"></i>Pause
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- GPU Status Card -->
+                <div class="glass-card rounded-3xl p-8 hover:bg-white/20 transition-all duration-500 group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center">
+                            <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white p-4 rounded-2xl mr-4 shadow-xl group-hover:shadow-2xl transition-all duration-300">
+                                <i class="fas fa-microchip text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900">GPU Status</h4>
+                                <p class="text-sm text-gray-600">Updates every <span id="gpu-refresh-display">5</span> seconds</p>
+                            </div>
+                        </div>
+                        <div id="gpu-status-indicator" class="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Active Workers:</span>
+                            <span id="gpu-active-workers" class="font-bold text-blue-600">-/-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Availability:</span>
+                            <span id="gpu-availability" class="font-bold">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Memory Threshold:</span>
+                            <span id="gpu-memory" class="font-bold text-gray-700">- GB</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Current Users:</span>
+                            <div id="gpu-users" class="mt-1 text-sm text-gray-500">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Queue Status Card -->
+                <div class="glass-card rounded-3xl p-8 hover:bg-white/20 transition-all duration-500 group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center">
+                            <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-4 rounded-2xl mr-4 shadow-xl group-hover:shadow-2xl transition-all duration-300">
+                                <i class="fas fa-list text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900">Queue Status</h4>
+                                <p class="text-sm text-gray-600">Updates every <span id="queue-refresh-display">2</span> seconds</p>
+                            </div>
+                        </div>
+                        <div id="queue-status-indicator" class="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
+                    </div>
+                    
+                    <div id="queue-content">
+                        <div class="text-center text-gray-500 py-4">
+                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <p>Loading queue status...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Status Dashboard -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-up">
+            <div class="glass-card rounded-2xl p-6 hover:bg-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl group">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">Service Mode</h4>
+                        <p class="text-sm text-gray-600">Current deployment</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 p-3 rounded-xl shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+                        <i class="fas fa-cogs text-xl"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-black text-blue-600 group-hover:text-blue-700 transition-colors duration-300">{service_mode}</p>
+            </div>
+            
+            <div class="glass-card rounded-2xl p-6 hover:bg-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl group">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900 group-hover:text-emerald-600 transition-colors duration-300">API Version</h4>
+                        <p class="text-sm text-gray-600">Current release</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 text-emerald-700 p-3 rounded-xl shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+                        <i class="fas fa-tag text-xl"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-black text-emerald-600 group-hover:text-emerald-700 transition-colors duration-300">v{version}</p>
+            </div>
+            
+            <div class="glass-card rounded-2xl p-6 hover:bg-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl group">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-300">Status</h4>
+                        <p class="text-sm text-gray-600">System health</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-100 to-purple-200 text-purple-700 p-3 rounded-xl shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+                        <i class="fas fa-heartbeat text-xl"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-black text-purple-600 group-hover:text-purple-700 transition-colors duration-300">Healthy</p>
+            </div>
+            
+            <div class="glass-card rounded-2xl p-6 hover:bg-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl group">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300">Uptime</h4>
+                        <p class="text-sm text-gray-600">Service availability</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-100 to-orange-200 text-orange-700 p-3 rounded-xl shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+                        <i class="fas fa-clock text-xl"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-black text-orange-600 group-hover:text-orange-700 transition-colors duration-300">99.9%</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enhanced Footer -->
+    <footer class="relative z-10 bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border-t border-white/10 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- API Information -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold text-white mb-6 flex items-center">
+                        <i class="{service_icon} mr-3 text-blue-400"></i>
+                        {service_name}
+                    </h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        High-performance OCR and document processing API built for enterprise applications.
+                    </p>
+                    <div class="flex space-x-4 pt-4">
+                        <a href="/docs" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="/redoc" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+                            <i class="fas fa-book text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold text-white mb-6">Quick Links</h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="/docs" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <i class="fas fa-chevron-right mr-2 text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                API Documentation
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/redoc" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <i class="fas fa-chevron-right mr-2 text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                ReDoc
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/api/v1/health" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <i class="fas fa-chevron-right mr-2 text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                Health Check
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Service Information -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold text-white mb-6">Service Info</h4>
+                    <ul class="space-y-3 text-gray-300 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-server mr-3 text-blue-400"></i>
+                            Mode: <span class="font-semibold ml-1">{service_mode}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-code-branch mr-3 text-blue-400"></i>
+                            Version: <span class="font-semibold ml-1">v{version}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-shield-alt mr-3 text-blue-400"></i>
+                            Status: <span class="font-semibold ml-1 text-green-400">Operational</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock mr-3 text-blue-400"></i>
+                            Uptime: <span class="font-semibold ml-1">99.9%</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="border-t border-gray-700/50 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <div class="flex items-center space-x-6">
+                        <p class="text-gray-400 text-sm">
+                            © 2025 OCR API. Built with FastAPI and modern AI models.
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <span class="text-gray-400 text-sm">
+                            Powered by {service_mode} Technology
+                        </span>
+                        <div class="flex items-center space-x-2 bg-green-500/20 px-3 py-1 rounded-full">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            <span class="text-green-400 text-xs font-semibold">Live</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Enhanced Functionality -->
+    <script>
+        // Mode switching function
+        function switchMode() {{
+            const select = document.getElementById('modeToggle');
+            const selectedMode = select.value;
+            console.log('Switching to mode:', selectedMode);
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('mode', selectedMode);
+            console.log('New URL:', currentUrl.toString());
+            window.location.href = currentUrl.toString();
+        }}
+
+        // Copy to clipboard functionality
+        function copyToClipboard(elementId) {{
+            const element = document.getElementById(elementId);
+            const text = element.textContent || element.innerText;
+            
+            if (navigator.clipboard && window.isSecureContext) {{
+                navigator.clipboard.writeText(text).then(() => {{
+                    showCopyFeedback(elementId);
+                }}).catch(err => {{
+                    console.error('Could not copy text: ', err);
+                    fallbackCopyTextToClipboard(text, elementId);
+                }});
+            }} else {{
+                fallbackCopyTextToClipboard(text, elementId);
+            }}
+        }}
+
+        // Fallback copy method for older browsers
+        function fallbackCopyTextToClipboard(text, elementId) {{
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {{
+                document.execCommand('copy');
+                showCopyFeedback(elementId);
+            }} catch (err) {{
+                console.error('Fallback: Oops, unable to copy', err);
+            }}
+            
+            document.body.removeChild(textArea);
+        }}
+
+        // Show copy feedback
+        function showCopyFeedback(elementId) {{
+            const button = document.querySelector(`[onclick="copyToClipboard('${{elementId}}')"]`);
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
+            button.classList.add('bg-green-100', 'text-green-700');
+            
+            setTimeout(() => {{
+                button.innerHTML = originalText;
+                button.classList.remove('bg-green-100', 'text-green-700');
+            }}, 2000);
+        }}
+
+        // Initialize the select based on current URL parameter
+        document.addEventListener('DOMContentLoaded', function() {{
+            const urlParams = new URLSearchParams(window.location.search);
+            const modeParam = urlParams.get('mode');
+            const select = document.getElementById('modeToggle');
+            
+            console.log('Current URL mode param:', modeParam);
+            console.log('Current template mode:', '{current_mode}');
+            
+            // Set the select value based on current mode
+            if (modeParam) {{
+                select.value = modeParam;
+            }} else {{
+                // Use the template mode as fallback
+                select.value = '{current_mode}';
+            }}
+        }});
+
+        // Add smooth scroll behavior for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {{
+            anchor.addEventListener('click', function (e) {{
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {{
+                    target.scrollIntoView({{
+                        behavior: 'smooth',
+                        block: 'start'
+                    }});
+                }}
+            }});
+        }});
+
+        // Add intersection observer for scroll animations
+        const observerOptions = {{
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        }};
+
+        const observer = new IntersectionObserver(function(entries) {{
+            entries.forEach(entry => {{
+                if (entry.isIntersecting) {{
+                    entry.target.style.animationDelay = '0.1s';
+                    entry.target.classList.add('animate-scale-in');
+                }}
+            }});
+        }}, observerOptions);
+
+        // Observe elements for animations
+        document.querySelectorAll('.glass-card, .glass-effect').forEach(el => {{
+            observer.observe(el);
+        }});
+
+        // Add hover effects for interactive elements
+        document.querySelectorAll('.group').forEach(element => {{
+            element.addEventListener('mouseenter', function() {{
+                this.style.transform = 'translateY(-2px)';
+            }});
+            
+            element.addEventListener('mouseleave', function() {{
+                this.style.transform = 'translateY(0)';
+            }});
+        }});
+
+        // Performance optimization: Preload critical resources
+        const preloadResources = [
+            'https://cdn.tailwindcss.com',
+            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+        ];
+
+        preloadResources.forEach(resource => {{
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = resource;
+            link.as = 'style';
+            document.head.appendChild(link);
+        }});
+
+        // Add loading state management
+        window.addEventListener('beforeunload', function() {{
+            document.body.style.opacity = '0.7';
+        }});
+
+        // Console welcome message
+        console.log('%c🚀 OCR API Dashboard Loaded', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
+        console.log('%cCurrent Mode: {current_mode}', 'color: #10b981; font-size: 12px;');
+        console.log('%cAPI Version: v{version}', 'color: #f59e0b; font-size: 12px;');
+
+        // Real-time monitoring functions
+        let gpuStatusInterval;
+        let queueStatusInterval;
+        let gpuRefreshRate = 5000; // Default 5 seconds
+        let queueRefreshRate = 2000; // Default 2 seconds
+        let monitoringPaused = false;
+
+        // Update GPU refresh rate
+        function updateGpuRefreshRate() {{
+            const select = document.getElementById('gpu-refresh-rate');
+            gpuRefreshRate = parseInt(select.value);
+            
+            // Update display
+            const seconds = gpuRefreshRate / 1000;
+            document.getElementById('gpu-refresh-display').textContent = seconds;
+            
+            // Restart interval with new rate
+            if (!monitoringPaused) {{
+                clearInterval(gpuStatusInterval);
+                gpuStatusInterval = setInterval(fetchGpuStatus, gpuRefreshRate);
+            }}
+            
+            console.log(`GPU refresh rate updated to ${{seconds}} seconds`);
+        }}
+
+        // Update Queue refresh rate
+        function updateQueueRefreshRate() {{
+            const select = document.getElementById('queue-refresh-rate');
+            queueRefreshRate = parseInt(select.value);
+            
+            // Update display
+            const seconds = queueRefreshRate / 1000;
+            document.getElementById('queue-refresh-display').textContent = seconds;
+            
+            // Restart interval with new rate
+            if (!monitoringPaused) {{
+                clearInterval(queueStatusInterval);
+                queueStatusInterval = setInterval(fetchQueueStatus, queueRefreshRate);
+            }}
+            
+            console.log(`Queue refresh rate updated to ${{seconds}} seconds`);
+        }}
+
+        // Pause/Resume monitoring
+        function pauseResumeMonitoring() {{
+            const button = document.getElementById('pause-resume-btn');
+            
+            if (monitoringPaused) {{
+                // Resume monitoring
+                monitoringPaused = false;
+                gpuStatusInterval = setInterval(fetchGpuStatus, gpuRefreshRate);
+                queueStatusInterval = setInterval(fetchQueueStatus, queueRefreshRate);
+                
+                button.innerHTML = '<i class="fas fa-pause mr-2"></i>Pause';
+                button.className = 'inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md';
+                
+                console.log('Monitoring resumed');
+            }} else {{
+                // Pause monitoring
+                monitoringPaused = true;
+                clearInterval(gpuStatusInterval);
+                clearInterval(queueStatusInterval);
+                
+                button.innerHTML = '<i class="fas fa-play mr-2"></i>Resume';
+                button.className = 'inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md';
+                
+                console.log('Monitoring paused');
+            }}
+        }}
+
+        // Fetch GPU status
+        async function fetchGpuStatus() {{
+            try {{
+                const response = await fetch('/api/v1/gpu/status');
+                const data = await response.json();
+                
+                if (data.success) {{
+                    const status = data.gpu_status;
+                    document.getElementById('gpu-active-workers').textContent = `${{status.active_count}}/${{status.max_concurrent}}`;
+                    document.getElementById('gpu-availability').textContent = status.is_available ? 'Available' : 'Busy';
+                    document.getElementById('gpu-availability').className = status.is_available ? 'font-bold text-green-500' : 'font-bold text-red-500';
+                    document.getElementById('gpu-memory').textContent = `${{status.memory_threshold_gb}} GB`;
+                    
+                    const usersText = status.current_users.length > 0 ? status.current_users.join(', ') : 'None';
+                    document.getElementById('gpu-users').textContent = usersText;
+                    
+                    // Update indicator
+                    const indicator = document.getElementById('gpu-status-indicator');
+                    indicator.className = 'w-3 h-3 bg-green-500 rounded-full animate-pulse';
+                }} else {{
+                    throw new Error('Failed to fetch GPU status');
+                }}
+            }} catch (error) {{
+                console.error('Error fetching GPU status:', error);
+                const indicator = document.getElementById('gpu-status-indicator');
+                indicator.className = 'w-3 h-3 bg-red-500 rounded-full';
+                document.getElementById('gpu-active-workers').textContent = 'Error';
+            }}
+        }}
+
+        // Fetch queue status based on current mode
+        async function fetchQueueStatus() {{
+            try {{
+                const currentMode = '{current_mode}';
+                let endpoint = '';
+                
+                if (currentMode === 'TrOCR') {{
+                    endpoint = '/api/v1/ocr/queue/status';
+                }} else if (currentMode === 'Qwen') {{
+                    endpoint = '/api/v1/parse/queue/status';
+                }} else {{
+                    // Hybrid mode - show both
+                    await fetchBothQueues();
+                    return;
+                }}
+                
+                const response = await fetch(endpoint);
+                
+                if (response.ok) {{
+                    const data = await response.json();
+                    if (data.success) {{
+                        displaySingleQueue(data.queue_info, currentMode);
+                        
+                        // Update indicator
+                        const indicator = document.getElementById('queue-status-indicator');
+                        indicator.className = 'w-3 h-3 bg-green-500 rounded-full animate-pulse';
+                        return;
+                    }}
+                }}
+                
+                // If endpoint is down, show mock data
+                throw new Error(`Queue endpoint not available (${{response.status}})`);
+                
+            }} catch (error) {{
+                console.warn('Queue endpoint unavailable, showing mock data:', error.message);
+                
+                // Show mock data when endpoint is down
+                const mockQueueInfo = {{
+                    active_jobs: 0,
+                    max_workers: 1,
+                    current_jobs: [],
+                    queue_size: 0,
+                    priority_queue_size: 0,
+                    total_pending: 0
+                }};
+                
+                displaySingleQueue(mockQueueInfo, '{current_mode}');
+                
+                // Update indicator to yellow (warning)
+                const indicator = document.getElementById('queue-status-indicator');
+                indicator.className = 'w-3 h-3 bg-yellow-500 rounded-full animate-pulse';
+                
+                // Add warning message
+                const queueContent = document.getElementById('queue-content');
+                queueContent.innerHTML += '<div class="mt-3 p-2 bg-yellow-50 rounded-lg border border-yellow-200"><p class="text-xs text-yellow-700"><i class="fas fa-exclamation-triangle mr-1"></i>Queue endpoint unavailable - showing default values</p></div>';
+            }}
+        }}
+
+        // Fetch both queues for Hybrid mode
+        async function fetchBothQueues() {{
+            try {{
+                const [ocrResponse, parseResponse] = await Promise.allSettled([
+                    fetch('/api/v1/ocr/queue/status'),
+                    fetch('/api/v1/parse/queue/status')
+                ]);
+                
+                let content = '<div class="space-y-4">';
+                let hasData = false;
+                
+                // Handle OCR queue
+                if (ocrResponse.status === 'fulfilled' && ocrResponse.value.ok) {{
+                    try {{
+                        const ocrData = await ocrResponse.value.json();
+                        if (ocrData.success) {{
+                            content += `
+                                <div class="border-b border-gray-200/50 pb-3">
+                                    <h5 class="font-semibold text-gray-700 mb-2">📝 TrOCR Queue</h5>
+                                    ${{formatQueueInfo(ocrData.queue_info)}}
+                                </div>
+                            `;
+                            hasData = true;
+                        }}
+                    }} catch (e) {{
+                        console.warn('Error parsing OCR queue data:', e);
+                    }}
+                }} else {{
+                    // Show mock data for OCR
+                    const mockOcrInfo = {{ active_jobs: 0, max_workers: 1, queue_size: 0, total_pending: 0 }};
+                    content += `
+                        <div class="border-b border-gray-200/50 pb-3">
+                            <h5 class="font-semibold text-gray-700 mb-2">📝 TrOCR Queue <span class="text-xs text-yellow-600">(offline)</span></h5>
+                            ${{formatQueueInfo(mockOcrInfo)}}
+                        </div>
+                    `;
+                }}
+                
+                // Handle Forms queue
+                if (parseResponse.status === 'fulfilled' && parseResponse.value.ok) {{
+                    try {{
+                        const parseData = await parseResponse.value.json();
+                        if (parseData.success) {{
+                            content += `
+                                <div class="pt-3">
+                                    <h5 class="font-semibold text-gray-700 mb-2">🧠 Forms Queue</h5>
+                                    ${{formatQueueInfo(parseData.queue_info)}}
+                                </div>
+                            `;
+                            hasData = true;
+                        }}
+                    }} catch (e) {{
+                        console.warn('Error parsing Forms queue data:', e);
+                    }}
+                }} else {{
+                    // Show mock data for Forms
+                    const mockFormsInfo = {{ active_jobs: 0, max_workers: 1, queue_size: 0, total_pending: 0 }};
+                    content += `
+                        <div class="pt-3">
+                            <h5 class="font-semibold text-gray-700 mb-2">🧠 Forms Queue <span class="text-xs text-yellow-600">(offline)</span></h5>
+                            ${{formatQueueInfo(mockFormsInfo)}}
+                        </div>
+                    `;
+                }}
+                
+                content += '</div>';
+                
+                if (!hasData) {{
+                    content += '<div class="mt-3 p-2 bg-yellow-50 rounded-lg border border-yellow-200"><p class="text-xs text-yellow-700"><i class="fas fa-exclamation-triangle mr-1"></i>Both queue endpoints unavailable - showing default values</p></div>';
+                }}
+                
+                document.getElementById('queue-content').innerHTML = content;
+                
+                // Update indicator
+                const indicator = document.getElementById('queue-status-indicator');
+                indicator.className = hasData ? 'w-3 h-3 bg-green-500 rounded-full animate-pulse' : 'w-3 h-3 bg-yellow-500 rounded-full animate-pulse';
+                
+            }} catch (error) {{
+                console.error('Error fetching both queues:', error);
+                const indicator = document.getElementById('queue-status-indicator');
+                indicator.className = 'w-3 h-3 bg-red-500 rounded-full';
+                document.getElementById('queue-content').innerHTML = '<div class="text-center text-red-500 py-4">Error loading queue status</div>';
+            }}
+        }}
+
+        // Display single queue
+        function displaySingleQueue(queueInfo, mode) {{
+            const icon = mode === 'TrOCR' ? '📝' : '🧠';
+            const name = mode === 'TrOCR' ? 'TrOCR' : 'Forms';
+            
+            const content = `
+                <div>
+                    <h5 class="font-semibold text-gray-700 mb-3">${{icon}} ${{name}} Queue</h5>
+                    ${{formatQueueInfo(queueInfo)}}
+                </div>
+            `;
+            document.getElementById('queue-content').innerHTML = content;
+        }}
+
+        // Format queue information
+        function formatQueueInfo(queueInfo) {{
+            return `
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Active Jobs:</span>
+                        <span class="font-bold text-purple-600">${{queueInfo.active_jobs || 0}}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Pending Jobs:</span>
+                        <span class="font-bold text-orange-600">${{queueInfo.total_pending || 0}}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Max Workers:</span>
+                        <span class="font-bold text-gray-700">${{queueInfo.max_workers || 0}}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Queue Size:</span>
+                        <span class="font-bold text-blue-600">${{queueInfo.queue_size || 0}}</span>
+                    </div>
+                </div>
+            `;
+        }}
+
+        // Start monitoring when page loads
+        document.addEventListener('DOMContentLoaded', function() {{
+            // Initial load
+            fetchGpuStatus();
+            fetchQueueStatus();
+            
+            // Set up intervals with current refresh rates
+            gpuStatusInterval = setInterval(fetchGpuStatus, gpuRefreshRate);
+            queueStatusInterval = setInterval(fetchQueueStatus, queueRefreshRate);
+            
+            console.log(`Monitoring started - GPU: ${{gpuRefreshRate/1000}}s, Queue: ${{queueRefreshRate/1000}}s`);
+        }});
+
+        // Clean up intervals when page unloads
+        window.addEventListener('beforeunload', function() {{
+            if (gpuStatusInterval) clearInterval(gpuStatusInterval);
+            if (queueStatusInterval) clearInterval(queueStatusInterval);
+        }});
+    </script>
+</body>
+</html>

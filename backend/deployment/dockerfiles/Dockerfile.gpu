@@ -1,0 +1,42 @@
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+
+WORKDIR /app
+
+# Install system dependencies
+RUN rm -f /etc/apt/sources.list.d/cuda*.list /etc/apt/sources.list.d/nvidia-ml.list || true && \
+    apt-get update && apt-get install -y \
+    python3.10 \
+    python3-pip \
+    python3-venv \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    wget \
+    curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set python and pip alias
+RUN ln -sf /usr/bin/python3.13 /usr/bin/python && ln -sf /usr/bin/pip3 /usr/bin/pip
+
+COPY backend/requirements/requirements-gpu.txt .
+
+ENV PIP_ROOT_USER_ACTION=ignore
+RUN pip install --upgrade pip \
+#  && pip install torch==2.7.1+cu118 torchvision==0.22.1+cu118 --extra-index-url https://download.pytorch.org/whl/cu118 \
+ && pip install --no-cache-dir -r requirements-gpu.txt
+
+COPY . .
+RUN mkdir -p logs
+
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+CMD ["uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000"]

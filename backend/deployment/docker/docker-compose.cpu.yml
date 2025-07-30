@@ -1,0 +1,17 @@
+services:
+  trocr-ocr:
+    container_name: ocr-service
+    build:
+      context: ../../../
+      dockerfile: backend/deployment/dockerfiles/Dockerfile.cpu
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - trocr-network
+    environment:
+      - ENV=production
+      - LOG_LEVEL=info
+    volumes:
+      - /home/trocr_training:/app/trocr_training/
+    # runtime omitted for CPU
