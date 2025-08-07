@@ -25,11 +25,12 @@ class Settings(BaseSettings):
     DEPLOYED_OCR: str = "TrOCR"  # Options: "Qwen" or "TrOCR"
     
     # Qwen Vision Model Settings
-    QWEN_VL_MODEL: str = "Qwen/Qwen2.5-VL-3B-Instruct"
+    QWEN_VL_MODEL: str = "Qwen/Qwen2.5-VL-7B-Instruct"
     DEVICE_MAP: str = "auto"
     TRUST_REMOTE_CODE: bool = True  
     LOW_CPU_MEM_USAGE: bool = True
-    LOAD_IN_8BIT: bool = False
+    LOAD_IN_8BIT: bool = True
+    LOAD_IN_4BIT: bool = False
         
     DEFAULT_LLM_PROMPT: str = """FORM IMAGE TO JSON - Extract ALL information from this form image and return ONLY a valid JSON object.
             - Do NOT return any commentary, description, example, or explanation—ONLY the JSON object.

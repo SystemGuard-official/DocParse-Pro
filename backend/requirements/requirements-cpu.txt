@@ -12,3 +12,8 @@ pydantic==2.11.7
 redis==6.2.0
 accelerate==1.9.0
 asyncio==3.4.3
+pybind11==3.0.0
+cython==3.1.2
+pydantic_settings==2.10.1
+autoawq==0.2.9
+bitsandbytes==0.46.1

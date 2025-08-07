@@ -3,8 +3,6 @@ services:
     image: redis:7.2-alpine
     container_name: redis-service
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     networks:
       - trocr-network
     volumes:

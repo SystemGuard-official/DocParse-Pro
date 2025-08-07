@@ -27,7 +27,7 @@ class GPUResourceManager:
         self._lock = asyncio.Lock()
         self._current_users: set = set()
         self._max_concurrent = max_concurrent_users
-        self._memory_threshold = 12.0
+        # self._memory_threshold = 23.0  # Updated for Qwen VL 2.5 7B model (requires ~24GB)
         
     async def acquire_gpu(self, service_name: str, worker_id: int = None) -> bool:
         """
@@ -43,10 +43,10 @@ class GPUResourceManager:
                 return False
             
             # Check GPU memory usage
-            memory_info = log_gpu_memory(f"GPU check for {user_id}")
-            if memory_info and memory_info["allocated"] > self._memory_threshold:
-                logger.warning(f"GPU access denied to {user_id}, memory usage too high: {memory_info['allocated']:.2f}GB")
-                return False
+            # memory_info = log_gpu_memory(f"GPU check for {user_id}")
+            # if memory_info and memory_info["allocated"] > self._memory_threshold:
+            #     logger.warning(f"GPU access denied to {user_id}, memory usage too high: {memory_info['allocated']:.2f}GB")
+            #     return False
             
             self._current_users.add(user_id)
             log_gpu_memory(f"GPU acquired by {user_id}")

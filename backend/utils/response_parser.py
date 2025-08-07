@@ -11,7 +11,7 @@ def extract_and_parse_json(data_string: str) -> Optional[Dict[Any, Any]]:
     Extract JSON from the data string and parse it.
     
     This function is designed to extract JSON content that is wrapped in 
-    markdown code blocks (```json ... ```) and parse it into a Python dictionary.
+    markdown code blocks (```json ... ```) or as plain JSON, and parse it into a Python dictionary.
     It includes robust JSON cleaning and repair functionality.
     
     Args:
@@ -21,12 +21,37 @@ def extract_and_parse_json(data_string: str) -> Optional[Dict[Any, Any]]:
         Optional[Dict[Any, Any]]: Parsed JSON data as a dictionary, or None if parsing fails
     """
     try:
-        # Find the JSON content between ```json and ```
+        # Strategy 1: Try to find JSON in markdown code blocks
         json_pattern = r'```json\s*(.*?)\s*```'
-        match = re.search(json_pattern, data_string, re.DOTALL)
-        if not match:
-            return None
-        json_content = match.group(1)
+        match = re.search(json_pattern, data_string, re.DOTALL | re.IGNORECASE)
+        
+        if match:
+            json_content = match.group(1).strip()
+        else:
+            # Strategy 2: Try to find JSON object directly
+            # Look for content between first { and last }
+            first_brace = data_string.find('{')
+            last_brace = data_string.rfind('}')
+            
+            if first_brace != -1 and last_brace != -1 and first_brace < last_brace:
+                json_content = data_string[first_brace:last_brace + 1]
+            else:
+                # Strategy 3: Look for any JSON-like pattern
+                json_object_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+                matches = re.findall(json_object_pattern, data_string, re.DOTALL)
+                if matches:
+                    # Take the longest match (most likely to be complete)
+                    json_content = max(matches, key=len)
+                else:
+                    return None
+
+        # First try to parse the JSON directly
+        try:
+            parsed_data = json.loads(json_content)
+            return parsed_data
+        except json.JSONDecodeError:
+            # If direct parsing fails, try cleaning and repairing
+            pass
 
         def clean_json_string(text: str) -> str:
             """Clean and repair JSON string with intelligent structure recovery."""

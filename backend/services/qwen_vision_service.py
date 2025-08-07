@@ -1,4 +1,4 @@
-from transformers import AutoModelForVision2Seq, AutoTokenizer, AutoProcessor
+from transformers import AutoModelForVision2Seq, AutoTokenizer, AutoProcessor, BitsAndBytesConfig
 from PIL import Image
 import torch
 import io
@@ -28,6 +28,14 @@ else:
 
     tokenizer = AutoTokenizer.from_pretrained(settings.QWEN_VL_MODEL, trust_remote_code=True)
     processor = AutoProcessor.from_pretrained(settings.QWEN_VL_MODEL, trust_remote_code=True)
+    
+    # Configure quantization if enabled
+    quantization_config = None
+    if settings.LOAD_IN_8BIT:
+        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+    elif settings.LOAD_IN_4BIT:
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+    
     # Load model with memory optimization (GPU only)
     model = AutoModelForVision2Seq.from_pretrained(
         settings.QWEN_VL_MODEL,
@@ -35,7 +43,7 @@ else:
         trust_remote_code=settings.TRUST_REMOTE_CODE,
         torch_dtype=torch.float16,  # Always use float16 for GPU to save memory
         low_cpu_mem_usage=settings.LOW_CPU_MEM_USAGE,  # Reduce CPU memory usage during loading
-        load_in_8bit=settings.LOAD_IN_8BIT,  # Set to True if you have bitsandbytes installed for even more memory savings
+        quantization_config=quantization_config,  # Use BitsAndBytesConfig instead of deprecated load_in_8bit
     )
 
     model.eval()
@@ -45,6 +53,14 @@ else:
     gc.collect()
     logger.info(f"GPU memory after model loading: {torch.cuda.memory_allocated()/1024**3:.2f} GB")
     logger.info(f"GPU memory reserved: {torch.cuda.memory_reserved()/1024**3:.2f} GB")
+    
+    # Log model configuration for debugging
+    logger.info(f"Model config - Model type: {model.config.model_type}")
+    logger.info(f"Model config - Vocab size: {model.config.vocab_size}")
+    logger.info(f"Model config - Hidden size: {model.config.hidden_size}")
+    if hasattr(model.config, 'vision_config'):
+        logger.info(f"Vision config available: True")
+    logger.info(f"Quantization config: {model.config.quantization_config if hasattr(model.config, 'quantization_config') else 'None'}")
     logger.info("Model loaded on GPU with memory optimization.")
 
 class QwenFormParser:
@@ -79,22 +95,30 @@ class QwenFormParser:
         gc.collect()
         
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        prompt = f"""
-         <|im_start|>user
-         
-            {llm_prompt}
-            
-            <|vision_start|><|image_pad|><|vision_end|>
-            <|im_end|>
-            <|im_start|>assistant
-            """
+        
+        # Correct prompt format for Qwen2.5-VL models
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "image": image,
+                    },
+                    {"type": "text", "text": llm_prompt},
+                ],
+            }
+        ]
+        
+        # Apply chat template - this is crucial for proper formatting
+        text = processor.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
         start_infer = time.time()
         
         try:
-            if processor is None:
-                raise RuntimeError("Processor is not initialized. Ensure CUDA is available and the model is loaded.")
             inputs = processor(
-                text=[prompt],
+                text=[text],
                 images=[image],
                 return_tensors="pt",
                 padding=True
@@ -105,34 +129,39 @@ class QwenFormParser:
                     inputs[k] = inputs[k].to(device)
             logger.info(f"Inputs moved to device: {device}")
             
-            if model is None:
-                raise RuntimeError("Model is not initialized. Ensure CUDA is available and the model is loaded.")
             with torch.no_grad():
                 output = model.generate(
                     **inputs,
-                    max_new_tokens=1024,
-                    do_sample=True,
-                    temperature=0.1,
-                    top_p=0.9,
-                    repetition_penalty=1.05,
-                    eos_token_id=tokenizer.eos_token_id if tokenizer is not None else None,
-                    pad_token_id=tokenizer.pad_token_id if tokenizer is not None else None
+                    max_new_tokens=2048,  # Increased for longer responses
+                    do_sample=False,      # Use greedy decoding for consistency
+                    temperature=None,     # Not used with do_sample=False
+                    top_p=None,          # Not used with do_sample=False
+                    repetition_penalty=None,  # Not used with do_sample=False
+                    eos_token_id=tokenizer.eos_token_id,
+                    pad_token_id=tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
                 )
             
             infer_time = time.time() - start_infer
             logger.info(f"Inference time: {infer_time:.2f} seconds")
-            result = tokenizer.decode(output[0], skip_special_tokens=True).strip() # type: ignore
+            
+            # Properly decode only the generated part (skip input tokens)
+            input_token_length = inputs['input_ids'].shape[1]
+            generated_tokens = output[0][input_token_length:]
+            result = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
             
             # Clean up tensors immediately
             del inputs, output
             torch.cuda.empty_cache()
             gc.collect()
             
-            json_result = extract_and_parse_json(result)
-            if json_result is not None:
-                return json_result # type: ignore
-            logger.warning("Failed to extract valid JSON, returning raw output.")
-            return result
+            # Try to extract and parse JSON from the response
+            parsed_result = extract_and_parse_json(result)
+            if parsed_result:
+                logger.info("Successfully extracted and parsed JSON from response")
+                return parsed_result
+            else:
+                logger.warning("Failed to extract valid JSON, returning raw output.")
+                return result
             
         except torch.cuda.OutOfMemoryError as e:
             logger.error(f"CUDA out of memory: {e}")
@@ -148,7 +177,7 @@ class QwenFormParser:
             gc.collect()
             raise
 
-    def parse_form_complete(self, filename: str, image_bytes: bytes, llm_prompt: str) -> FormParsingResult:
+    def parse_form_complete(self, filename: str, image_bytes: bytes, llm_prompt: str) -> str:
         start_time = time.time()
         image = Image.open(io.BytesIO(image_bytes))
         image_array = np.array(image)
